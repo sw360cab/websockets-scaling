@@ -1,0 +1,26 @@
+version: '3.2'
+services:
+  socket-server:
+    image: sw360cab/wsk-base:0.1.0
+    container_name: socket-server
+    restart: always
+
+  socket-server2:
+    image: sw360cab/wsk-base:0.1.0
+    container_name: socket-server2
+    restart: always
+
+  proxy:
+    image: haproxy:1
+    container_name: proxy
+    ports:
+      - 5000:80
+    restart: always
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg  
+    depends_on:
+      - socket-server
+
+  redis:
+    image: redis:5.0
+    container_name: redis-master.default.svc

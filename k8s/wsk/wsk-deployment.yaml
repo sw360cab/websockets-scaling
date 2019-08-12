@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wsk-deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wsk-base
+  template:
+    metadata:
+      labels:
+        app: wsk-base
+        track: stable
+        version: 0.1.0
+    spec:
+      containers:
+        - name: websocket-base
+          image: "sw360cab/wsk-base:0.1.0"
+          ports:
+          - name: websocket
+            containerPort: 5000
