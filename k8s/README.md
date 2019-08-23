@@ -28,13 +28,13 @@ A Master-Slave K8S for Redis  solution that is maintaing in-sync websockets thro
 
     # Launch Redis Deployment and Services
     cd redis/
-    kubectl create -f redis-master-deployment.yml, redis-slave-deployment.yml
-    kubectl create -f redis-master-service.yml, redis-slave-service.yml
+    kubectl create -f redis-master-deployment.yaml, redis-slave-deployment.yaml
+    kubectl create -f redis-master-service.yaml, redis-slave-service.yaml
 
     # Launch Websocket Deployment and Services
     cd ../wsk
-    kubectl create -f wsk-deployment.yml
-    kubectl create -f wsk-service.yml
+    kubectl create -f wsk-deployment.yaml
+    kubectl create -f wsk-service.yaml
 
 ### client
 
