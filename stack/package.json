@@ -1,7 +1,11 @@
 {
   "name": "static-websocker-scaler",
   "version": "0.1.0",
-  "description": "",
+  "description": "A simple example of static Socket.io client/server",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sw360cab/websockets-scaling.git"
+  },
   "main": "server_socket.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
