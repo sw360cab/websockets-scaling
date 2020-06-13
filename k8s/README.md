@@ -5,8 +5,8 @@ The back part of Redis is handled by a classic Redis Master/Slave configuration.
 
 ## Websocket Deployment/Service (folder wsk/)
 
-The service is packed and exposed from static version via a docker image deployed on private registry.
-The port of the container is 5000. In an early version the service will be exposed via a NodePort on port 30000.
+The service is packed and exposed from static version via a Docker image deployed on private registry.
+The exposed port of the container / pod is 5000. The service can be exposed by a Traefik ingress or via a `NodePort` on port 30000.
 
 The key point of the service is `sessionAffinity: ClientIP` which will mimic Sticky connection for the service.
 
@@ -18,9 +18,13 @@ The key point of the service is `sessionAffinity: ClientIP` which will mimic Sti
 
 ## Redis Deployment/Service (folder redis/)
 
-A Master-Slave K8S for Redis  solution that is maintaing in-sync websockets through Pub/Sub, using the endpoint:
+A Master-Slave K8S for Redis solution that is maintaining in-sync websockets through Pub/Sub, using the endpoint:
 
-* **redis-master.default.svc.cluster.local**
+* **redis-master.default.svc.cluster.local`**
+
+## Traefik Ingress Route (folder traefik/)
+
+A Traefik `Ingress Route` can be used to proxy request towards websocket service.
 
 ## Setup and Run
 
@@ -36,8 +40,18 @@ A Master-Slave K8S for Redis  solution that is maintaing in-sync websockets thro
     kubectl create -f wsk-deployment.yaml
     kubectl create -f wsk-service.yaml
 
+    # Launch Traefik CRD, RBAC and Ingress
+    cd ../traefik
+    kubectl create -f crd.yaml
+    kubectl create -f rbac.yaml,traefik.yaml,ingress.yaml
+
 ### client
 
-For any new client open a new terminale and run:
+The client configuration is different depending on cluster setup:
+
+* `NodePort Service`: *http://localhost:30000*
+* `Traefik Ingress`: *http://localhost:30080* (also path is `wsk/`)
+
+For any new client open a new terminal and run:
 
     node client_socket.js

@@ -1,26 +1,43 @@
 version: '3.2'
 services:
   socket-server:
-    image: sw360cab/wsk-base:0.1.0
-    container_name: socket-server
+    # build: .
+    image: sw360cab/wsk-base:0.1.1
     restart: always
-
-  socket-server2:
-    image: sw360cab/wsk-base:0.1.0
-    container_name: socket-server2
-    restart: always
-
-  proxy:
-    image: haproxy:1
-    container_name: proxy
+    deploy:
+      mode: replicated
+      replicas: 2
+    environment:
+      - "REDIS_HOST=redis"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.socket-router.rule=PathPrefix(`/wsk`)"
+      - "traefik.http.services.service01.loadbalancer.server.port=5000"
+      - "traefik.http.services.service01.loadbalancer.sticky.cookie=true"
+      - "traefik.http.services.service01.loadbalancer.sticky.cookie.name=io"
+      - "traefik.http.services.service01.loadbalancer.sticky.cookie.httponly=true"
+      - "traefik.http.services.service01.loadbalancer.sticky.cookie.secure=true"
+      - "traefik.http.services.service01.loadbalancer.sticky.cookie.samesite=io"
+      # Replace prefix /wsk
+      - "traefik.http.middlewares.socket-replaceprefix.replacepath.path=/"
+      # Apply the middleware named `socket-replaceprefix` to the router named `scoker-router`
+      - "traefik.http.routers.socket-router.middlewares=socket-replaceprefix@docker"
+    
+  traefik-reverse-proxy:
+    image: traefik:v2.2
+    command: 
+      - "--api.insecure=true"
+      - "--providers.docker.exposedByDefault=false"
+      - "--accesslog"
+      # - "--entryPoints.web.address=:80"
+      # - "--entryPoints.web.forwardedHeaders.insecure=true"
     ports:
-      - 5000:80
-    restart: always
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
     volumes:
-      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg  
-    depends_on:
-      - socket-server
+      # allow Traefik to listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
 
   redis:
     image: redis:5.0
-    container_name: redis-master.default.svc

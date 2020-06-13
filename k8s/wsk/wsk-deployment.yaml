@@ -16,7 +16,11 @@ spec:
     spec:
       containers:
         - name: websocket-base
-          image: "sw360cab/wsk-base:0.1.0"
+          image: "sw360cab/wsk-base:0.1.1"
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: REDIS_HOST
+            value: "redis-master.default.svc"
           ports:
           - name: websocket
             containerPort: 5000
