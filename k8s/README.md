@@ -49,9 +49,9 @@ A Traefik `Ingress Route` can be used to proxy request towards websocket service
 
 The client configuration is different depending on cluster setup:
 
-* `NodePort Service`: *http://localhost:30000*
-* `Traefik Ingress`: *http://localhost:30080* (also path is `wsk/`)
+* `NodePort Service`: *<http://localhost:30000>*
+* `Traefik Ingress`: *<http://localhost:30080>* (also path is `wsk/`)
 
 For any new client open a new terminal and run:
 
-    node client_socket.js
+    node ../stack/client_socket.js
