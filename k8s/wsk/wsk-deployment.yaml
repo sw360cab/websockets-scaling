@@ -12,7 +12,7 @@ spec:
       labels:
         app: wsk-base
         track: stable
-        version: 0.1.0
+        version: 0.1.1
     spec:
       containers:
         - name: websocket-base

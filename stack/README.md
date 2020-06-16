@@ -1,15 +1,27 @@
-# Static Microservices Scenario
+# Stack Docker version
 
 This leverages **docker-compose** and deploys the following services:
 
 * redis (pub/sub)
 * socket-server application (2 instances)
-* Traefik ad reverse proxy (with dynamic configuration)
+* HAProxy to balance requests (with static configuration)
+
+`Note`: socket-server application is deployed explicitly twice to allow a fully static configuration of HAProxy.
 
 ## HAProxy
 
-Traefik is employed as proxy for Websockets connections.
-It dynamically configures itself leveraging `Docker Labels` on websocket service image
+HAProxy is employed as proxy for Websockets connections. The important parts of configuration are:
+
+    cookie io prefix indirect nocache
+
+Using the `io cookie` set upon handshake.
+
+and:
+
+    server ws0 socket-server:3000 check cookie ws0
+    server ws1 socket-server:3001 check cookie ws1
+
+to set balanced host configuration.
 
 ## Setup and Run
 
@@ -25,7 +37,7 @@ It dynamically configures itself leveraging `Docker Labels` on websocket service
 
 ### client
 
-The client endpoint is `<http://localhost:80>`, path is `wsk/`.
+The client endpoint is `<http://localhost:80>`.
 
 For any new client open a new terminale and run:
 

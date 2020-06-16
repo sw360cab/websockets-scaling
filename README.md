@@ -5,11 +5,11 @@
 Purpose of this is achieving a scalable environment when WebSocket are involved.
 The pattern to reproduce is a Multi-Server to Multi-client communication via websocket.
 
-The result should be a client connected to a specific server host and keeping its connection bound to it (**sticky** connection).
+The result should be a client connected to a specific server host and keeping its connection bound to it (`sticky` connection).
 Whereas the server hosts will broadcast messages in turn and all the connected clients should receive them.
-The latter will be achieved leveraging the pub/sub paradigm of **Redis**.
+The latter will be achieved leveraging the pub/sub paradigm of `Redis`.
 
-The application is made of server and client part. Both are based *socket.io* library.
+The application is made of server and client part. Both are based `socket.io` library.
 
 ### Server
 

@@ -13,5 +13,5 @@ spec:
     - protocol: TCP
       port: 3000
       targetPort: 5000
-  #     nodePort: 30000
-  # type: NodePort
+      nodePort: 30000
+  type: NodePort

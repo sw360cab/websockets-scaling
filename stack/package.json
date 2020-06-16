@@ -1,6 +1,6 @@
 {
   "name": "static-websocker-scaler",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A simple example of static Socket.io client/server",
   "repository": {
     "type": "git",
