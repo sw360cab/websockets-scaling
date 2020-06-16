@@ -56,7 +56,7 @@ The server is also able to broadcast messages to all the clients connected to th
 io.emit("brdcst", 'A broadcast message');
 ```
 
-`Tip`: that messages will be received by ALL the clients connected.
+>`Tip`: that messages will be received by ALL the clients connected.
 
 ## Multi-Server to Multi-Client communication
 
@@ -162,7 +162,7 @@ socket-server2:
     - "REDIS_HOST=redis"
 ```
 
-`Tip`: another elegant way to achieve that is by using `docker-compose up -d --scale socket-server=2 socket-server`
+>`Tip`: another elegant way to achieve that is by using `docker-compose up -d --scale socket-server=2 socket-server`
 
 Now to bring everything up is sufficient to execute:
 
@@ -170,7 +170,7 @@ Now to bring everything up is sufficient to execute:
 docker-compose up -d
 ```
 
-`Tip`: when using `HAProxy` remember to define the correct hostnames of the endpoint involved in the configuration file.
+>`Tip`: when using `HAProxy` remember to define the correct hostnames of the endpoint involved in the configuration file.
 
 ```bash
 backend bk_socket
@@ -182,7 +182,7 @@ backend bk_socket
   #server ws1 socket-server2:5000 check cookie ws1
 ```
 
-`Tip`: After introducing a *Reverse Proxy* remember to tune the endpoint hostname and port which the client will attempt to connect to.
+>`Tip`: After introducing a *Reverse Proxy* remember to tune the endpoint hostname and port which the client will attempt to connect to.
 
 ## Orchestrating more and more: a Kubernetes cluster in action
 
@@ -231,7 +231,7 @@ spec:
 
 The key point of the service is `sessionAffinity: ClientIP` which will mimic Sticky connection for the service.
 
-* `Tip`: In general `Round Robin` among Pods is not guaranteed using a simple solution like *NodePort*. In order to mimic Round Robin policy, this part of the previous configuration was employed:
+>`Tip`: In general `Round Robin` among Pods is not guaranteed using a simple solution like *NodePort*. In order to mimic Round Robin policy, this part of the previous configuration was employed:
 
 ```yaml
 sessionAffinityConfig:
@@ -274,7 +274,7 @@ const client = io('http://localhost:30000', {
 In this part we started from scratch and we land to a fully clustered architecture.
 In a following chapter we will see of we can achieve an even more sophisticated solution.
 
-`Note`: This part will correspond in the repository to the `haproxy` branch
+>`Note`: This part will correspond in the repository to the `haproxy` branch
 
 ## References
 

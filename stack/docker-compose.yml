@@ -25,7 +25,7 @@ services:
     
   traefik-reverse-proxy:
     image: traefik:v2.2
-    command: 
+    command:
       - "--api.insecure=true"
       - "--providers.docker.exposedByDefault=false"
       - "--accesslog"
