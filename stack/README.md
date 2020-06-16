@@ -6,7 +6,7 @@ This leverages **docker-compose** and deploys the following services:
 * socket-server application (2 instances)
 * Traefik ad reverse proxy (with dynamic configuration)
 
-## HAProxy
+## Traefik
 
 Traefik is employed as proxy for Websockets connections.
 It dynamically configures itself leveraging `Docker Labels` on websocket service image

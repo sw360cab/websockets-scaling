@@ -155,7 +155,7 @@ In this case you may use the `docker-compose` basic command. An extra replica of
 
 ```yaml
 socket-server2:
-  image: sw360cab/wsk-base:0.1.0
+  image: sw360cab/wsk-base:0.1.1
   container_name: socket-server2
   restart: always
   environment:
