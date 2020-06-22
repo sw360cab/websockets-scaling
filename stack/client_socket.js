@@ -6,12 +6,12 @@ const client = io('http://localhost:30000', {
   // port: 30000 - when using plain k8s with NodePort
   path: '/', // for all other scenarios
   reconnection: true,
-  reconnectionDelay: 10000,
-  reconnectionAttempts: 20,
+  reconnectionDelay: 500,
   transports: ['websocket']
 });
 
 const clientId = uuid.v4()
+let disconnectTimer;
 
 client.on('connect', function(){
   console.log("Connected!", clientId);
@@ -19,6 +19,8 @@ client.on('connect', function(){
     console.log('Sending first message');
     client.emit('test000', clientId);
   }, 500);
+  // clear disconnection timeout
+  clearTimeout(disconnectTimer);
 });
 
 client.on('okok', function(message) {
@@ -27,7 +29,10 @@ client.on('okok', function(message) {
 
 client.on('disconnect', function(){
   console.log("Disconnected!");
-  process.exit(0);
+  disconnectTimer = setTimeout(function() {
+    console.log('Not reconnecting in 30s. Exiting...');
+    process.exit(0);
+  }, 30000);
 });
 
 client.on('error', function(err){
