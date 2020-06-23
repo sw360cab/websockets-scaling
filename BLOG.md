@@ -14,7 +14,7 @@ Creating a single server in `NodeJS` where multiple clients can connect is fairl
 | :--: |
 
 One of the main feature of the library is that it can wrap the websocket within an http server.
-For example, a first approach can be thta as soon as a client connects to the websocket, the server application logs the message and may wait for a specific `topic` on it:
+For example, a first approach can be that as soon as a client connects to the websocket, the server application logs the message and may wait for a specific `topic` on it:
 
 ```Javascript
 // Server
@@ -56,7 +56,7 @@ The server is also able to broadcast messages to all the clients connected to th
 io.emit("brdcst", 'A broadcast message');
 ```
 
->`Tip`: that messages will be received by ALL the clients connected.
+>`Tip`: those messages will be received by ALL the clients connected.
 
 ## Multi-Server to Multi-Client communication
 
@@ -64,7 +64,7 @@ The previous example was simple and fun. We can play with it effectively. But cr
 
 There are 2 main issues to take into account:
 
-1. multiple websocket servers involved should coordinate among themselves. Once a server receives a message from a client, it should ensure that all clients connected to all server receive this message.
+1. multiple websocket servers involved should coordinate among themselves. Once a server receives a message from a client, it should ensure that any clients connected to any servers receive this message.
 2. when a client handshakes and establishes a connection with a server, all its future messages should pass through the same server, otherwise another server will refuse further messages upon receiving them.
 
 Luckily the two problems are not so difficult as they appear.
@@ -170,7 +170,7 @@ Now to bring everything up is sufficient to execute:
 docker-compose up -d
 ```
 
->`Tip`: when using `HAProxy` remember to define the correct hostnames of the endpoint involved in the configuration file.
+>`Tip`: when using `HAProxy` remember to define the correct hostnames of the endpoints involved in the configuration file.
 
 ```bash
 backend bk_socket
@@ -194,7 +194,7 @@ Each request received by the service will be forwarded to the replica set define
 
 Supposing that you have a K8s cluster setup (I suggest [K3s](https://k3s.io/ "K3s: Lightweight Kubernetes") or [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/ "kind") for development purpose), we will have:
 
-* Redis service and deployment (to add more sugar in the [repo]((https://github.com/sw360cab/websockets-scaling)) I employed a Master-Slave Redis solution )
+* Redis service and deployment (to add more sugar in the [repo](https://github.com/sw360cab/websockets-scaling) I employed a Master-Slave Redis solution)
 * Websocket Application service and deployment (the latter is composed of 3 replicas of the custom image of the NodeJS application)
 
 The new architecture we will achieve can be summarized as follow:
@@ -207,7 +207,7 @@ The new architecture we will achieve can be summarized as follow:
 As we seen before in this shift towards Kubernetes we skipped the Reverse Proxy part (*HAProxy*).
 This is completely on purpose, because creating a Kubernetes Service enables directly such a form of proxing.
 
-Although a Kubernetes Service can be exposed outside the cluster in many ways (NodePort, LoadBalancer, Ingress, check [here](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)), in this case I decided for a simple way. Indeed using `NodePort` allows to expose a specific port, where the clients will connect to.
+Although a Kubernetes Service can be exposed outside the cluster in many ways (NodePort, LoadBalancer, Ingress, check [here](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)), in this case I decided for a simple way. Indeed using `NodePort` allows to expose a specific port outside the cluster, where the clients will connect to.
 
 ```yaml
 apiVersion: v1
@@ -239,7 +239,7 @@ sessionAffinityConfig:
     timeoutSeconds: 10
 ```
 
-The cluster can established with simple `kubectl` commands:
+The cluster can be established with simple `kubectl` commands:
 
 ```bash
 # Launch Redis Master/Slave Deployment and Service
@@ -255,7 +255,7 @@ Dealing with this new architecture will lead to slight changes to client:
 * the endpoint should be tuned according to cluster configuration. In the case above with local cluster having a NodePort service, the endpoint will be `http://localhost:30000`
 
 * relying on the K8s orchestration means that pods can be transparently rescheduled. So a pod can be suddenly terminated and this can give a hard time to the client.
-However if we add `reconnection` policies to the client, as soon as the connection is lost, it will reconnect to the first available pod in the replica set maintained by the deployment.
+However if we add `reconnection` policies to the client, as soon as the connection is lost, it will reconnect to the first available pod in the replicaset maintained by the deployment.
 
 Here is the new client configuration:
 
@@ -264,15 +264,13 @@ const io = require('socket.io-client')
 const client = io('http://localhost:30000', {
   reconnection: true,
   reconnectionDelay: 500,
-  reconnectionAttempts: 10,
   transports: ['websocket']
 });
 ```
 
 ## Conclusions
 
-In this part we started from scratch and we land to a fully clustered architecture.
-In a following chapter we will see of we can achieve an even more sophisticated solution.
+In this part we started from scratch and we landed in a fully clustered architecture. In a following chapter we will see of we can achieve an even more sophisticated solution.
 
 >`Note`: This part will correspond in the repository to the `haproxy` branch
 
