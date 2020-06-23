@@ -21,5 +21,12 @@ spec:
     services:
     - name: wsk-svc
       port: 3000
+      sticky:
+        cookie:
+          httpOnly: true
+          name: io
+          secure: true
+          sameSite: lax
+      strategy: RoundRobin
     middlewares:
     - name: socket-replaceprefix

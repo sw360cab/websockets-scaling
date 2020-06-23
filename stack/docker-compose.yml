@@ -17,7 +17,7 @@ services:
       - "traefik.http.services.service01.loadbalancer.sticky.cookie.name=io"
       - "traefik.http.services.service01.loadbalancer.sticky.cookie.httponly=true"
       - "traefik.http.services.service01.loadbalancer.sticky.cookie.secure=true"
-      - "traefik.http.services.service01.loadbalancer.sticky.cookie.samesite=io"
+      - "traefik.http.services.service01.loadbalancer.sticky.cookie.samesite=lax"
       # Replace prefix /wsk
       - "traefik.http.middlewares.socket-replaceprefix.replacepath.path=/"
       # Apply the middleware named `socket-replaceprefix` to the router named `scoker-router`

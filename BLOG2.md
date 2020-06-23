@@ -9,12 +9,12 @@ The final architecture looks like the following diagram.
 | :--: |
 
 You may remember that one of the key point in the whole multi-server pattern was leveraging an element which acts as `Reverse Proxy`.
-In the case of Docker configuration we defined a service in *docker-compose*, whereas in Kubernetes it was easier to employ a simple Service Resource, in that case exposed as a `NodePort`.
+In the case of Docker configuration we defined a service in *docker-compose*, whereas in Kubernetes it was easier to employ a simple *Service Resource*, in that case exposed as a `NodePort`.
 
 It would be nice to have a solution that is suitable for both cases maybe reusing some configurations.
 Moreover Kubernetes may require even more attention since resources can be rescheduled quite often, so the configuration should be flexible enough to keep up with this dynamic pattern.
 
-## Traefik: one tool addressing many issues
+## Traefik: one service addressing many issues
 
 > `Traefik` is an open-source *Edge Router* that makes publishing your services a fun and easy experience. It receives requests on behalf of your system and finds out which components are responsible for handling them.
 
@@ -64,7 +64,7 @@ Going back to what explained at the beginning, this philosopy is particularly us
 * it adapts to a K8S cluster where resources can be quickly scheduled or terminated,
 * it is reusable and adaptable, since the same configuration elements (entrypoints, routers, middlewares) are present either if we are working in Docker or in Kubernetes.
 
->`Tip`: Traefik has a vast and deep documentation. Many examples are included, most of the time they are referred with multiple providers variant. Sometimes only `File Provider` fashion. Since you will likely employ another provider, don't be scared, the transition from File provider to others is simple enough.
+>`Tip`: Traefik has a vast and deep documentation. Many examples are included, most of the time they are referred with multiple providers variant. Sometimes only in the `File Provider` fashion. Since you will likely employ another provider, don't be scared, the transition from File provider to others is simple enough.
 
 ### TLS & HTTPS
 
@@ -106,7 +106,7 @@ traefik-reverse-proxy:
 
 As you see the key part is mapping `Docker Daemon` entry point for Docker APIs into Traefik, hence it will be able to listen to any configuration change in the stack.
 
-All the necessary configuration parts will be dynamic and left to the `Docker Provider`. It will placed in the websocket application service as `label` items of service configuration:
+All the necessary configuration parts will be dynamic and left to the `Docker Provider`. It will placed in the websocket application service as `label` items of the service configuration:
 
 ```yaml
 socket-server:
@@ -153,7 +153,7 @@ At this point you just need to launch the stack again, with:
 docker stack deploy --compose-file stack/docker-compose.yml wsk
 ```
 
-Then check out the Traefik Dashboard exposed by default at <http://localhost:8080> and if no errors are shown, get your websocket client ready to connect. Don't forget to tune its configuration, now to reach the websocket service, the client will contact directly Traefik, which in turn is now exposing the service at path `/wsk`.
+Then check out the Traefik Dashboard exposed by default at <http://localhost:8080> and if no errors are shown, get your websocket client ready to connect. Don't forget to tune its configuration: now to reach the websocket service, the client will contact directly Traefik, which in turn is now exposing the service at path `/wsk`.
 
 ```Javascript
 const io = require('socket.io-client');
@@ -163,7 +163,7 @@ const client = io('http://localhost:80', {
 });
 ```
 
-And the magic should happen! The communication among clients and websocket services keep on working smoothly!
+And the magic should happen! The communication among clients and websocket services keeps on working smoothly!
 
 ## Traefik in Kubernetes
 
@@ -216,7 +216,7 @@ spec:
       port: 3000
 ```
 
-The provious configuration define an IngressRoute related to the entrypoint `web` (which was defined above in Traefik deployment), and a rule the match everything having that `PathPrefix` to a specific Kubernetes service resource.
+The previous configuration define an IngressRoute related to the entrypoint `web` (which was defined above in Traefik deployment), and a rule which match everything having that `PathPrefix` to a specific Kubernetes service resource.
 
 >`Tip`: whether your service will have access from a predefined domain name, the router *match* rules will be similar to:
 
@@ -269,9 +269,9 @@ spec:
 ```
 
 The configuration above will expose Traefik `web` entrypoint on port **30080** and Dashboard on port **30808**.
-When a client send a request through port 30080 (supposing on localhost), the latter will be forwarded to the entrypoint, then through the `IngressRoute` custom resource, which in turn, according to `router` rules will allow the request to be received by the corresponding service . Finally the service response will be forwarded back through the same path and back to the client outside the cluster.
+When a client send a request through port 30080 (supposing on localhost), the latter will be forwarded to the entrypoint, then through the `IngressRoute` custom resource, which in turn, according to `router` rules, will allow the request to be received by the corresponding service. Finally the service response will be forwarded back through the same path and back to the client outside the cluster.
 
-Now we are ready to launch K8s new resources. First off all let's define the new CRD, then launch Traefik resources and finally redeploy websocket service (supposing it has been already scheduled).
+Now we are ready to launch K8s new resources. First off all let's define the new CRD, then we launch Traefik resources and finally we may redeploy websocket service (supposing it has been already scheduled).
 
 ```bash
 # Launch Traefik CRD
@@ -284,10 +284,9 @@ kubectl apply -f k8s/wsk/wsk-service.yaml
 
 ### A Traefik Middleware
 
-`Middlewares`  are a key concept in Traefik as they add very powerful manipulation possibilities to incoming requests
-There is a long list of natively available ones in the [official doc](https://docs.traefik.io/middlewares/overview/).
+`Middlewares` are a key concept in Traefik as they add very powerful manipulation possibilities to incoming requests. There is a long list of natively available ones in the [official doc](https://docs.traefik.io/middlewares/overview/).
 
-As for the Docker configuration also for Kubernetes we may expose our weboscket service at path `/wsk`. Respect to the previous configuration, this change requires only a slight change by:
+As for the Docker configuration also for Kubernetes we may expose our weboscket service at path `/wsk`. Respect to the previous configuration, this shift requires only a slight change by:
 
 1. introducing a `StripPrefix` Middleware resource (using another Traefik CRD),
 2. adding the previous middleware reference to the list of middlewares in the Router within the IngressRoute configuration.
@@ -353,7 +352,6 @@ If you have clear where you want to go, Traefik will be a good friend. As you ma
 * [sw360cab/websockets-scaling: A tutorial to scale Websockets both via Docker Swarm and Kubernetes](https://github.com/sw360cab/websockets-scaling)
 * [Concepts - Traefik](https://docs.traefik.io/getting-started/concepts/ "Concepts - Traefik")
 * [Docker - Traefik](https://docs.traefik.io/providers/docker/ "Docker - Traefik")
-* [Docker - Traefik](https://docs.traefik.io/routing/providers/docker/ "Docker - Traefik")
-* [Docker - Traefik](https://docs.traefik.io/reference/dynamic-configuration/docker/ "Docker - Traefik")
+* [Docker Configuration Reference - Traefik](https://docs.traefik.io/reference/dynamic-configuration/docker/ "Docker Configuration Reference - Traefik")
 * [Kubernetes IngressRoute - Traefik](https://docs.traefik.io/routing/providers/kubernetes-crd/ "Kubernetes IngressRoute - Traefik")
 * [Middlewares - Traefik](https://docs.traefik.io/middlewares/overview/ "Middlewares - Traefik")
