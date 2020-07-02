@@ -51,9 +51,9 @@ The configuration can be defined either as:
 * Environment variables,
 * Text File (either in `yaml` or `toml` format).
 
-What is more interesting is `dynamic` configuration. This can change and is seamlessly hot-reloaded, without any request interruption or connection loss. Depending on the provider Traefik will listen to any change and adapt to any change in configuration.
+What is more interesting is `dynamic` configuration. This can change and is seamlessly hot-reloaded, without any request interruption or connection loss. Depending on the provider Traefik will listen and adapt to any change in configuration.
 
-Static and dynamic configuration can be mixed and work together without any problem. It is quite common to launch Traefik CLI with some options and then allow dynamic parts to complete the configuration. Indeed you will usually declare the provider (e.g. Kubernetes, Docker, File) in Traefik CLI and then leave all the rest of configuration as dynamic, using different patterns, according to each specific provider:
+Static and dynamic configurations can be mixed and work together without any problem. It is quite common to launch Traefik CLI with some options and then allow dynamic parts to complete the configuration. Indeed you will usually declare the provider (e.g. Kubernetes, Docker, File) in Traefik CLI and then leave all the rest of configuration as dynamic, using different patterns, according to each specific provider:
 
 * `Labels` for Docker provider
 * `CRD` or `Ingress` for Kubernetes provider
@@ -61,7 +61,7 @@ Static and dynamic configuration can be mixed and work together without any prob
 
 Going back to what explained at the beginning, this philosopy is particularly useful:
 
-* it adapts to a K8S cluster where resources can be quickly scheduled or terminated,
+* it adapts to a K8s cluster where resources can be quickly scheduled or terminated,
 * it is reusable and adaptable, since the same configuration elements (entrypoints, routers, middlewares) are present either if we are working in Docker or in Kubernetes.
 
 >`Tip`: Traefik has a vast and deep documentation. Many examples are included, most of the time they are referred with multiple providers variant. Sometimes only in the `File Provider` fashion. Since you will likely employ another provider, don't be scared, the transition from File provider to others is simple enough.
@@ -106,7 +106,7 @@ traefik-reverse-proxy:
 
 As you see the key part is mapping `Docker Daemon` entry point for Docker APIs into Traefik, hence it will be able to listen to any configuration change in the stack.
 
-All the necessary configuration parts will be dynamic and left to the `Docker Provider`. It will placed in the websocket application service as `label` items of the service configuration:
+All the necessary configuration parts will be dynamic and left to the `Docker Provider`. They will placed in the websocket application service as `label` items of the service configuration:
 
 ```yaml
 socket-server:
@@ -143,7 +143,7 @@ In this line:
 - "traefik.http.routers.socket-router.middlewares=socket-replaceprefix@docker"
 ```
 
-The middleware defined is dynamically associated with the router by a list of formatted strings of type `<middleware_name>@<provider_name>`.
+The middleware defined is dynamically associated with the router by a list of formatted strings with the convention `<middleware_name>@<provider_name>`.
 
 >`Note`: the names of router (`socket-router`), service (`service01`) and middleware (`socket-replaceprefix`) do not follow any convention and are absolutely up to you.
 
@@ -179,7 +179,7 @@ In this environment Traefik requires the definition of the following resources:
 * CRD
 * RBAC (Role-Based Access Control) defining these items:
   * ServiceAccount
-  * ClusterRole (with access to specific api groups in K8S)
+  * ClusterRole (with access to specific api groups in K8s)
   * ClusterRoleBinding (binding the previous two items)
 * Deployment (Traefik Pod definition)
 
@@ -286,7 +286,7 @@ kubectl apply -f k8s/wsk/wsk-service.yaml
 
 `Middlewares` are a key concept in Traefik as they add very powerful manipulation possibilities to incoming requests. There is a long list of natively available ones in the [official doc](https://docs.traefik.io/middlewares/overview/).
 
-As for the Docker configuration also for Kubernetes we may expose our weboscket service at path `/wsk`. Respect to the previous configuration, this shift requires only a slight change by:
+As for the Docker configuration also for Kubernetes we may expose our websocket service at path `/wsk`. Respect to the previous configuration, this shift requires only a slight change by:
 
 1. introducing a `StripPrefix` Middleware resource (using another Traefik CRD),
 2. adding the previous middleware reference to the list of middlewares in the Router within the IngressRoute configuration.
