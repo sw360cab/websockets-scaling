@@ -10,7 +10,7 @@ const client = io('http://localhost:30000', {
   transports: ['websocket']
 });
 
-const clientId = uuid.v4()
+const clientId = uuid.v4();
 let disconnectTimer;
 
 client.on('connect', function(){
